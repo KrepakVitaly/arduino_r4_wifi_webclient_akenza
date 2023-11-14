@@ -1,6 +1,21 @@
 /*
   Web client
 
+  This sketch connects to a website (http://www.google.com)
+  using the WiFi module.
+
+  This example is written for a network using WPA encryption. For
+  WEP or WPA, change the WiFi.begin() call accordingly.
+
+  This example is written for a network using WPA encryption. For
+  WEP or WPA, change the WiFi.begin() call accordingly.
+
+
+  created 13 July 2010
+  by dlf (Metodo2 srl)
+  modified 31 May 2012
+  by Tom Igoe
+
   Find the full UNO R4 WiFi Network documentation here:
   https://docs.arduino.cc/tutorials/uno-r4-wifi/wifi-examples#wi-fi-web-client
  */
@@ -12,8 +27,8 @@
 #include "arduino_secrets.h" 
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
-char ssid[] = "BELL856";        // your network SSID (name)
-char pass[] = "7C3E456CC496";    // your network password (use for WPA, or use as key for WEP)
+char ssid[] = "Ororo iphone";        // your network SSID (name)
+char pass[] = "ororomagic1";    // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;            // your network key index number (needed only for WEP)
 
 int status = WL_IDLE_STATUS;
@@ -32,9 +47,10 @@ void setup() {
 /* -------------------------------------------------------------------------- */  
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
+  delay(10000);
+  //while (!Serial) {
+  //  ; // wait for serial port to connect. Needed for native USB port only
+  //}
   
   // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE) {
@@ -52,11 +68,19 @@ void setup() {
   while (status != WL_CONNECTED) {
     Serial.print("Attempting to connect to SSID: ");
     Serial.println(ssid);
+    //WiFi.mode(WIFI_STA);
+    delay(100);
+    WiFi.disconnect();
+    delay(100);
+    //
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
-     
+    Serial.print("Status:");
+    Serial.println(status);
+    printWifiStatus();
     // wait 10 seconds for connection:
     delay(10000);
+    
   }
   
   printWifiStatus();
@@ -81,26 +105,33 @@ void read_response() {
   }  
 }
 
-
+int resolution = 0;
 int voltage0Pin = A0; // Voltage sensor < 25V
 int voltage0 = 0;  // variable to store the value read
 int voltage1Pin = A1; // Voltage sensor < 25V
 int voltage1 = 0;  // variable to store the value read
+int voltage2Pin = A2; // Voltage sensor < 25V
+int voltage2 = 0;  // variable to store the value read
 
-int current0Pin = A0; // Voltage sensor < 25V
+int current0Pin = A3; // Voltage sensor < 25V
 int current0 = 0;  // variable to store the value read
-int current1Pin = A1; // Voltage sensor < 25V
+int current1Pin = A4; // Voltage sensor < 25V
 int current1 = 0;  // variable to store the value read
+
+
 /* -------------------------------------------------------------------------- */
 void loop() {
 /* -------------------------------------------------------------------------- */  
+  resolution = analogReadResolution();
   voltage0 = analogRead(voltage0Pin);
   voltage1 = analogRead(voltage1Pin);
+  voltage2 = analogRead(voltage2Pin);
   current0 = analogRead(current0Pin);
   current1 = analogRead(current1Pin);
 
   Serial.println(voltage0);
   Serial.println(voltage1);
+  Serial.println(voltage2);
   Serial.println(current0);
   Serial.println(current1);
 
@@ -117,8 +148,10 @@ void loop() {
     String data = "{\"voltage0\":";
     data = data + voltage0 + ",";
     data = data + "\"voltage1\":" + voltage1 + ",";
+    data = data + "\"voltage2\":" + voltage2 + ",";
     data = data + "\"current0\":" + current0 + ",";
-    data = data + "\"current1\":" + current1 + "}";
+    data = data + "\"current1\":" + current1 + ",";
+    data = data + "\"resolution\":" + resolution + "}";
 
     Serial.println(data);
 
